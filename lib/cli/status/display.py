@@ -69,8 +69,8 @@ def health_bucket(node: dict[str, Any]) -> str:
     
 def get_avail_nodes(cluster_block):
 
-    available_nodes = {}
-    repair_nodes = {}
+    available_nodes = 0
+    repair_nodes = 0
     controller = db.get_controller_node()
 
     if controller is None:
