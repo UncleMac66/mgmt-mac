@@ -85,7 +85,7 @@ def get_avail_nodes(cluster_block):
     # sort the list down to just the ones from the specified clusterid
     cluster_hosts = [
         host for host in host_api_list 
-        if host.get('network_block_id') == cluster_block
+        if host.network_block_id == cluster_block
     ]
 
 
