@@ -124,6 +124,8 @@ def summarize_cluster(cluster: str, nodes: list[dict[str, Any]], cluster_block) 
     health_buckets: Counter[str] = Counter()
     nodes_running = 0
     nodes_configured = 0
+    avail_nodes = 0
+    repair_nodes = 0
 
     for n in nodes:
         ad = str(n.get("availability_domain") or "")
