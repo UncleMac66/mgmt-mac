@@ -264,7 +264,14 @@ def render_status(nodes, no_color: bool):
 
         for n in needs_attention :
             hostname = click.style(f"n['hostname']", fg=yellow)
-            row = f"{n['hostname']:<18} {n['cluster_name']:15} {n['status']:15} {n['slurm_state']:12} {n['healthcheck_recommendation']}"
+            # row = f"{n['hostname']:<18} {n['cluster_name']:15} {n['status']:15} {n['slurm_state']:12} {n['healthcheck_recommendation']}"
+            row = (
+            f"{str(n.get('hostname') or ''):<18} "
+            f"{str(n.get('cluster_name') or ''):15} "
+            f"{str(n.get('status') or ''):15} "
+            f"{str(n.get('slurm_state') or ''):12} "
+            f"{str(n.get('healthcheck_recommendation') or '')}"
+            )
             click.echo(row)
 
         click.echo("\nHint: Run 'mgmt recommendations list' for more details")
