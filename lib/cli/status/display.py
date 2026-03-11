@@ -73,8 +73,9 @@ def get_avail_nodes(cluster_block):
     repair_nodes = 0
     controller = db.get_controller_node()
 
+
     if controller is None:
-        return {}
+        return None, None
 
     # get the list of hosts from host api
     host_api_list = func.get_host_api_dict(controller.compartment_id,controller.tenancy_id)
