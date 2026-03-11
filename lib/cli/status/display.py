@@ -168,7 +168,6 @@ def render_status(nodes, no_color: bool):
     compartment_ids: set[str] = set()
     controller_names: set[str] = set()
     shapes: Counter[str] = Counter()
-    managment_nodes = Counter[str] = Counter()
 
     # Define all colors based on no_color flag
     if not no_color:
@@ -253,7 +252,7 @@ def render_status(nodes, no_color: bool):
 
         ads = ",".join(s.ad_counts.keys())
         capacity_col = f"{s.avail_nodes}|{s.repair_nodes}"
-        row = f"{s.cluster_name:18} {nodes_col:31} {health_bar:34} {capacity_col:10} {ads:15}"
+        row = f"{s.cluster_name:20} {nodes_col:31} {health_bar:34} {capacity_col:10} {ads:15}"
         click.echo(row)
 
     if len(needs_attention) > 0 :
