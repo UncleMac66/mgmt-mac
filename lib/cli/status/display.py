@@ -14,7 +14,7 @@ from lib.ociwrap import get_host_api_dict
 # Helper functions
 ###
 
-BASTION_ROLES = {"login", "monitoring", "controller"}
+BASTION_ROLES = {"login", "monitoring", "controller", "backup"}
 
 def supports_color(stream: Any) -> bool:
     if not hasattr(stream, "isatty") or not stream.isatty():
@@ -168,6 +168,7 @@ def render_status(nodes, no_color: bool):
     compartment_ids: set[str] = set()
     controller_names: set[str] = set()
     shapes: Counter[str] = Counter()
+    managment_nodes = Counter[str] = Counter()
 
     # Define all colors based on no_color flag
     if not no_color:
@@ -230,7 +231,7 @@ def render_status(nodes, no_color: bool):
     # Get cluster/node details
     # Cluster header
     
-    cluster_header = f"{'CLUSTER':18} {'NODES':31} {'HEALTH':25} {'CAPACITY':10} {'ROLES':26} {'AD':15} "
+    cluster_header = f"{'CLUSTER':20} {'NODES':31} {'HEALTH':25} {'CAPACITY (avail|repair)':24} {'AD':15} "
     click.echo(cluster_header)
 
 
@@ -252,7 +253,7 @@ def render_status(nodes, no_color: bool):
 
         ads = ",".join(s.ad_counts.keys())
         capacity_col = f"{s.avail_nodes}|{s.repair_nodes}"
-        row = f"{s.cluster_name:18} {nodes_col:31} {health_bar:34} {capacity_col:10} {roles_col:26} {ads:15}"
+        row = f"{s.cluster_name:18} {nodes_col:31} {health_bar:34} {capacity_col:10} {ads:15}"
         click.echo(row)
 
     if len(needs_attention) > 0 :
@@ -264,7 +265,7 @@ def render_status(nodes, no_color: bool):
 
         for n in needs_attention :
             hostname = click.style(f"n['hostname']", fg=yellow)
-            # row = f"{n['hostname']:<18} {n['cluster_name']:15} {n['status']:15} {n['slurm_state']:12} {n['healthcheck_recommendation']}"
+            # row = f"{n['hostname']:<20} {n['cluster_name']:15} {n['status']:15} {n['slurm_state']:12} {n['healthcheck_recommendation']}"
             row = (
             f"{str(n.get('hostname') or ''):<18} "
             f"{str(n.get('cluster_name') or ''):15} "
