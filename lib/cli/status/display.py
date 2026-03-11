@@ -230,7 +230,7 @@ def render_status(nodes, no_color: bool):
     # Get cluster/node details
     # Cluster header
     
-    cluster_header = f"{'CLUSTER':20} {'NODES':31} {'HEALTH':25} {'CAPACITY (avail|repair)':24} {'AD':15} "
+    cluster_header = f"{'CLUSTER':20} {'NODES':29} {'HEALTH':22} {'CAPACITY (avail|repair)':24} {'AD':15} "
     click.echo(cluster_header)
 
 
@@ -252,7 +252,7 @@ def render_status(nodes, no_color: bool):
 
         ads = ",".join(s.ad_counts.keys())
         capacity_col = f"{s.avail_nodes}|{s.repair_nodes}"
-        row = f"{s.cluster_name:20} {nodes_col:31} {health_bar:34} {capacity_col:10} {ads:15}"
+        row = f"{s.cluster_name:20} {nodes_col:29} {health_bar:31} {capacity_col:24} {ads:15}"
         click.echo(row)
 
     if len(needs_attention) > 0 :
