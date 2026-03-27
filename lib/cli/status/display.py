@@ -170,7 +170,7 @@ def render_status(nodes, no_color: bool):
     shapes: Counter[str] = Counter()
 
     # Define all colors based on no_color flag
-    if not no_color:
+    if no_color:
         black = None
         red = None
         green = None

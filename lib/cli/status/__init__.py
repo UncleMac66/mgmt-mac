@@ -22,54 +22,26 @@ def load_nodes():
 
 @click.command("status")
 @click.option(
-    "--watch",
-    is_flag=True,
-    default=False,
-    required=False,
-    help="Keep status page active and refresh every other second until interrupted."
-)
-@click.option(
     "--no_color",
     is_flag=True,
     default=False,
     required=False,
     help="Disable color output."
 )
-
 ###
 # Main 'status' command
 ###
-
-def cmd(watch, no_color):
+def cmd(no_color):
     """
     Display an overview status of the OCI-HPC Stack
 
-    By default the command runs once and prints the status.
+    By default the command runs once and prints the status in color.
     """
 
-    nodes = load_nodes()
+    def get_status():
+        nodes = load_nodes()
+        status = render_status(nodes, no_color)
 
-    if not nodes:
-        click.echo("No nodes found.", err=True)
-
-    #  Check color option
-    no_color = supports_color(sys.stdout) and not no_color
-
-    #  Check watch option, if not then only run once and exit
-    if not watch:
-        click.echo(render_status(nodes, no_color))
-        return
-
-    # Watch mode – clear screen and refresh each second
-    try:
-        while True:
-            click.clear()
-            click.echo(render_status(nodes, no_color))
-            click.echo("Ctrl-C to exit")
-            time.sleep(2)
-            nodes = load_nodes()
-
-    except KeyboardInterrupt:
-        click.echo("\nStopped watching.")
-
+    click.echo(get_status())
+    return
 
