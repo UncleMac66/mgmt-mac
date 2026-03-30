@@ -2,12 +2,12 @@ import sys
 import click
 import time
 import lib.database as db
-from lib.cli.status.display import supports_color, render_status 
+from lib.cli.status.display import render_status 
 from ClusterShell.NodeSet import NodeSet
 
 def load_nodes():
-    #  Load node details
 
+    #  Load node details
     base_query = db.get_nodes_with_latest_healthchecks()
     field_dict = {}
     query = db.get_query_by_fields(base_query,field_dict)

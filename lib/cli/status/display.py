@@ -16,14 +16,6 @@ from lib.ociwrap import get_host_api_dict
 
 BASTION_ROLES = {"login", "monitoring", "controller", "backup"}
 
-def supports_color(stream: Any) -> bool:
-    if not hasattr(stream, "isatty") or not stream.isatty():
-        return False
-    if os.environ.get("NO_COLOR") is not None:
-        return False
-    term = os.environ.get("TERM", "")
-    return term not in ("", "dumb")
-
 def percent(n: int, d: int) -> int:
     if d <= 0:
         return 0
@@ -265,13 +257,13 @@ def render_status(nodes, no_color: bool):
         needs_attention_heading = click.style(f"\nNodes needing attention ({len(needs_attention)})", fg=yellow)
         click.echo(needs_attention_heading)
         click.echo("+++++++++++++++++++++++++++\n")
-        needs_attention_header = click.style(f"{'HOSTNAME':18} {'CLUSTER':15} {'STATUS':15} {'SLURM STATE':12} {'RECOMMENDATION'}", fg=yellow)
+        needs_attention_header = click.style(f"{'HOSTNAME':22} {'CLUSTER':15} {'STATUS':15} {'SLURM STATE':12} {'RECOMMENDATION'}", fg=yellow)
         click.echo(needs_attention_header)
 
         for n in needs_attention :
             hostname = click.style(f"n['hostname']", fg=yellow)
             row = (
-            f"{str(n.get('hostname') or ''):<18} "
+            f"{str(n.get('hostname') or ''):<22} "
             f"{str(n.get('cluster_name') or ''):15} "
             f"{str(n.get('status') or ''):15} "
             f"{str(n.get('slurm_state') or ''):12} "
