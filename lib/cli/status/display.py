@@ -247,12 +247,18 @@ def render_status(nodes, no_color: bool):
 
         health_bar = click.style(bar(healthy, s.nodes_total, 14), fg=health_color)
         health_bar = f"{health_bar} {health_percent}%"
-
         roles_col = f"compute: {s.role_configured.get('compute', 0)} bastion: {s.role_configured.get('bastion', 0)}"
-
         ads = ",".join(s.ad_counts.keys())
         capacity_col = f"{s.avail_nodes}|{s.repair_nodes}"
-        row = f"{s.cluster_name:20} {nodes_col:29} {health_bar:31} {capacity_col:24} {ads:15}"
+
+        row = (
+        f"{str(s.cluster_name or ''):20} "
+        f"{str(nodes_col or ''):29} " 
+        f"{str(health_bar or ''):31} "
+        f"{str(capacity_col or ''):24} "
+        f"{str(ads or ''):15}"
+        )
+
         click.echo(row)
 
     if len(needs_attention) > 0 :
@@ -264,7 +270,6 @@ def render_status(nodes, no_color: bool):
 
         for n in needs_attention :
             hostname = click.style(f"n['hostname']", fg=yellow)
-            # row = f"{n['hostname']:<20} {n['cluster_name']:15} {n['status']:15} {n['slurm_state']:12} {n['healthcheck_recommendation']}"
             row = (
             f"{str(n.get('hostname') or ''):<18} "
             f"{str(n.get('cluster_name') or ''):15} "

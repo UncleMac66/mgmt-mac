@@ -37,11 +37,9 @@ def cmd(no_color):
 
     By default the command runs once and prints the status in color.
     """
-
-    def get_status():
-        nodes = load_nodes()
-        status = render_status(nodes, no_color)
-
-    click.echo(get_status())
+    
+    nodes = load_nodes()
+    status = render_status(nodes, no_color)
+    click.echo(status)
     return
 
