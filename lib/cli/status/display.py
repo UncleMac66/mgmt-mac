@@ -36,7 +36,7 @@ def is_configured(node: dict[str, Any]) -> bool:
 def is_running(node: dict[str, Any]) -> bool:
     return str(node.get("status") or "").lower() == "running"
 
-def category_for_role(role: str | None) -> str:
+def get_role(role: str | None) -> str:
     r = (role or "unknown").strip().lower()
     return "bastion" if r in BASTION_ROLES else r
 
@@ -123,7 +123,7 @@ def summarize_cluster(cluster: str, nodes: list[dict[str, Any]], cluster_block) 
     for n in nodes:
         ad = str(n.get("availability_domain") or "")
         ad_counts[ad] += 1
-        cat = category_for_role(n.get("role"))
+        cat = get_role(n.get("role"))
         role_total[cat] += 1
         if is_configured(n):
             role_configured[cat] += 1
@@ -157,6 +157,7 @@ def render_status(nodes, no_color: bool):
     clusters: dict[str, list[dict[str, Any]]] = defaultdict(list)
     tenancy_ids: set[str] = set()
     needs_attention = []
+    bastions = []
     compartment_ids: set[str] = set()
     controller_names: set[str] = set()
     shapes: Counter[str] = Counter()
@@ -197,6 +198,8 @@ def render_status(nodes, no_color: bool):
             controller_names.add(str(n.get("controller_name")))
         if n.get("shape"):
             shapes[str(n.get("shape"))] += 1
+        if get_role(n.get("role")) == "bastion":
+            bastions.append(n)
         if health_bucket(n) == "needs-attn":
             needs_attention.append(n)
 
@@ -208,16 +211,33 @@ def render_status(nodes, no_color: bool):
         click.echo(f"Compartment : {cid}")
     if shapes:
         click.echo(f"Shapes      : "+', '.join(f"{key} (qty: {value})" for key, value in shapes.items()))
-    click.echo("")
+    if bastions:
+        click.echo(f"Bastions    : "+', '.join(b['hostname'] for b in bastions)) 
+        #  click.echo(f"------------")
+        #  click.echo(f"{'HOSTNAME':29} {'CLUSTER':15} {'STATUS':15}")
+        #  for n in bastions :
+        #      hostname = click.style(f"n['hostname']", fg=blue)
+        #      row = (
+        #      f"{str(n.get('hostname') or ''):<29} "
+        #      f"{str(n.get('cluster_name') or ''):15} "
+        #      f"{str(n.get('status') or ''):15} "
+        #      )
+        #      click.echo(row)
+        click.echo("")
+
 
     if len(clusters) > 1  and len(nodes) > 1:
-        click.echo(f"Cluster Overview ({len(clusters)} clusters, {len(nodes)} nodes)\n")
+        click.echo(f"Cluster Overview ({len(clusters)} clusters, {len(nodes)} nodes)")
+        click.echo(f"---------------------------")
     elif  len(clusters) < 2  and len(nodes) > 1: 
-        click.echo(f"Cluster Overview ({len(clusters)} cluster, {len(nodes)} nodes)\n")
+        click.echo(f"Cluster Overview ({len(clusters)} cluster, {len(nodes)} nodes)")
+        click.echo(f"---------------------------")
     elif  len(clusters) > 1  and len(nodes) < 2: 
-        click.echo(f"Cluster Overview ({len(clusters)} clusters, {len(nodes)} node)\n")
+        click.echo(f"Cluster Overview ({len(clusters)} clusters, {len(nodes)} node)")
+        click.echo(f"---------------------------")
     else : 
-        click.echo(f"Cluster Overview ({len(clusters)} cluster, {len(nodes)} node)\n")
+        click.echo(f"Cluster Overview ({len(clusters)} cluster, {len(nodes)} node)")
+        click.echo(f"---------------------------")
 
     # Get cluster/node details
     # Cluster header
@@ -241,7 +261,10 @@ def render_status(nodes, no_color: bool):
         health_bar = f"{health_bar} {health_percent}%"
         roles_col = f"compute: {s.role_configured.get('compute', 0)} bastion: {s.role_configured.get('bastion', 0)}"
         ads = ",".join(s.ad_counts.keys())
-        capacity_col = f"{s.avail_nodes}|{s.repair_nodes}"
+        if s.avail_nodes == None:
+            capacity_col = "Not Available"
+        else:
+            capacity_col = f"{s.avail_nodes}|{s.repair_nodes}"
 
         row = (
         f"{str(s.cluster_name or ''):20} "
@@ -256,7 +279,7 @@ def render_status(nodes, no_color: bool):
     if len(needs_attention) > 0 :
         needs_attention_heading = click.style(f"\nNodes needing attention ({len(needs_attention)})", fg=yellow)
         click.echo(needs_attention_heading)
-        click.echo("+++++++++++++++++++++++++++\n")
+        click.echo("+++++++++++++++++++++++++++")
         needs_attention_header = click.style(f"{'HOSTNAME':22} {'CLUSTER':15} {'STATUS':15} {'SLURM STATE':12} {'RECOMMENDATION'}", fg=yellow)
         click.echo(needs_attention_header)
 
